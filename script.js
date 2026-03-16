@@ -10,7 +10,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   nextBtn.addEventListener("click", () => {
     currentSlide = (currentSlide + 1) % slides.length;
-    screen.setAttribute("src", slides[currentSlide]);
+    screen.setAttribute("material", "src", slides[currentSlide]);
   });
 
   moodBtn.addEventListener("click", () => {
