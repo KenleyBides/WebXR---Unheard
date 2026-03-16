@@ -16,48 +16,57 @@
       <img id="slide3" src="https://via.placeholder.com/1024x576/6c5b7b/ffffff?text=Stay+Calm+and+Present">
     </a-assets>
 
-    <a-entity position="0 0 4">
+    <!-- User spawn: front of classroom -->
+    <a-entity position="0 1.6 7">
       <a-camera>
         <a-cursor color="#000000"></a-cursor>
       </a-camera>
     </a-entity>
 
+    <!-- Lighting -->
     <a-entity light="type: ambient; intensity: 0.9"></a-entity>
     <a-entity light="type: directional; intensity: 0.8" position="2 4 2"></a-entity>
 
+    <!-- Room -->
     <a-plane rotation="-90 0 0" width="20" height="20" color="#bdbdbd"></a-plane>
-
     <a-box position="0 2 -8" width="20" height="4" depth="0.2" color="#efefef"></a-box>
     <a-box position="-10 2 0" width="0.2" height="4" depth="20" color="#dddddd"></a-box>
     <a-box position="10 2 0" width="0.2" height="4" depth="20" color="#dddddd"></a-box>
     <a-box position="0 4 0" width="20" height="0.2" depth="20" color="#f5f5f5"></a-box>
 
-    <a-plane id="screen" position="0 2.5 -7.7" width="5" height="2.8" src="#slide1"></a-plane>
+    <!-- Presentation screen above audience on front wall -->
+    <a-plane id="screen" position="0 3.1 -7.7" width="5.5" height="3" src="#slide1"></a-plane>
 
-    <a-box position="0 0.5 -4.5" width="4" height="1" depth="2" color="#555555"></a-box>
+    <!-- Buttons under the screen, still in front -->
+    <a-box id="nextBtn" class="clickable" position="1.8 1.9 -7.3" width="1.2" height="0.5" depth="0.3" color="#4CAF50"></a-box>
+    <a-text value="Next" position="1.45 1.85 -7.05" scale="1.5 1.5 1.5" color="#ffffff"></a-text>
 
-    <a-box id="nextBtn" class="clickable" position="3 1.2 -4" width="1.2" height="0.5" depth="0.3" color="#4CAF50"></a-box>
-    <a-text value="Next" position="2.63 1.15 -3.8" scale="1.6 1.6 1.6" color="#ffffff"></a-text>
+    <a-box id="moodBtn" class="clickable" position="-1.8 1.9 -7.3" width="1.5" height="0.5" depth="0.3" color="#FF9800"></a-box>
+    <a-text value="Mood" position="-2.2 1.85 -7.05" scale="1.5 1.5 1.5" color="#ffffff"></a-text>
 
-    <a-box id="moodBtn" class="clickable" position="-3 1.2 -4" width="1.5" height="0.5" depth="0.3" color="#FF9800"></a-box>
-    <a-text value="Mood" position="-3.45 1.15 -3.8" scale="1.6 1.6 1.6" color="#ffffff"></a-text>
-
+    <!-- Audience facing the front wall -->
     <a-entity id="audience">
-      <a-cylinder class="person" position="-3 0.75 -1" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="-1 0.75 -1" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="1 0.75 -1" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="3 0.75 -1" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <!-- Row 1 -->
+      <a-cylinder class="person" position="-3 0.75 -2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <a-cylinder class="person" position="-1 0.75 -2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <a-cylinder class="person" position="1 0.75 -2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <a-cylinder class="person" position="3 0.75 -2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
 
-      <a-cylinder class="person" position="-4 0.75 1.3" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="-2 0.75 1.3" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="0 0.75 1.3" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="2 0.75 1.3" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="4 0.75 1.3" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <!-- Row 2 -->
+      <a-cylinder class="person" position="-4 0.75 0" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <a-cylinder class="person" position="-2 0.75 0" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <a-cylinder class="person" position="0 0.75 0" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <a-cylinder class="person" position="2 0.75 0" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <a-cylinder class="person" position="4 0.75 0" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+
+      <!-- Row 3 -->
+      <a-cylinder class="person" position="-3 0.75 2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <a-cylinder class="person" position="-1 0.75 2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <a-cylinder class="person" position="1 0.75 2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <a-cylinder class="person" position="3 0.75 2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
     </a-entity>
 
     <a-sky color="#ececec"></a-sky>
   </a-scene>
 </body>
 </html>
-
-<!-- This file is repsonsible for the vr environment (just a classroom for now) -->
