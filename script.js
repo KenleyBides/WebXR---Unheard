@@ -1,21 +1,25 @@
 const pageData = [
   {
     title: "Page 1",
-    text: "Welcome to Unheard.\nUse the editor panel\nto write your speaking notes."
+    text: "Welcome to Unheard"
   },
   {
     title: "Page 2",
-    text: "Main point:\nExplain your idea clearly\nand keep steady pacing."
+    text: "Main point"
   },
   {
     title: "Page 3",
-    text: "Conclusion:\nSummarize the takeaway\nand end confidently."
+    text: "Conclusion"
   }
 ];
 
 let currentPage = 0;
 
 window.addEventListener("DOMContentLoaded", () => {
+  const TITLE_MAX_CHARS = 52;
+  const BODY_MAX_LINES = 8;
+  const BODY_MAX_CHARS_PER_LINE = 34;
+
   const screenTitle = document.querySelector("#screenTitle");
   const screenText = document.querySelector("#screenText");
   const screenPage = document.querySelector("#screenPage");
@@ -39,10 +43,74 @@ window.addEventListener("DOMContentLoaded", () => {
     return value.replace(/\r/g, "").trim();
   }
 
+  function clampTitle(value) {
+    const normalized = sanitizeText(value).replace(/\s+/g, " ");
+    if (!normalized) {
+      return "";
+    }
+    return normalized.length <= TITLE_MAX_CHARS
+      ? normalized
+      : `${normalized.slice(0, TITLE_MAX_CHARS - 1)}…`;
+  }
+
+  function fitBodyText(value) {
+    const text = sanitizeText(value);
+    if (!text) {
+      return "";
+    }
+
+    const sourceLines = text.split("\n");
+    const fitted = [];
+
+    for (const sourceLine of sourceLines) {
+      const words = sourceLine.trim().split(/\s+/).filter(Boolean);
+      if (words.length === 0) {
+        fitted.push("");
+        continue;
+      }
+
+      let current = "";
+      for (const word of words) {
+        const proposal = current ? `${current} ${word}` : word;
+        if (proposal.length <= BODY_MAX_CHARS_PER_LINE) {
+          current = proposal;
+        } else {
+          if (current) {
+            fitted.push(current);
+          }
+          current =
+            word.length <= BODY_MAX_CHARS_PER_LINE
+              ? word
+              : `${word.slice(0, BODY_MAX_CHARS_PER_LINE - 1)}…`;
+        }
+      }
+      if (current) {
+        fitted.push(current);
+      }
+    }
+
+    const trimmedLines = fitted.slice(0, BODY_MAX_LINES);
+    if (fitted.length > BODY_MAX_LINES && trimmedLines.length > 0) {
+      const last = trimmedLines[trimmedLines.length - 1];
+      trimmedLines[trimmedLines.length - 1] =
+        last.length >= BODY_MAX_CHARS_PER_LINE
+          ? `${last.slice(0, BODY_MAX_CHARS_PER_LINE - 1)}…`
+          : `${last}…`;
+    }
+    return trimmedLines.join("\n");
+  }
+
+  function getDisplayContent(page) {
+    const title = clampTitle(page.title) || `Page ${currentPage + 1}`;
+    const text = fitBodyText(page.text) || "No notes on this page yet.";
+    return { title, text };
+  }
+
   function updateScreen() {
     const page = pageData[currentPage];
-    screenTitle.setAttribute("value", page.title || `Page ${currentPage + 1}`);
-    screenText.setAttribute("value", page.text || "No notes on this page yet.");
+    const display = getDisplayContent(page);
+    screenTitle.setAttribute("value", display.title);
+    screenText.setAttribute("value", display.text);
     screenPage.setAttribute("value", `${currentPage + 1} / ${pageData.length}`);
 
     slideTitleInput.value = page.title;
@@ -51,11 +119,8 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   function saveCurrentPage() {
-    pageData[currentPage].title =
-      sanitizeText(slideTitleInput.value) || `Page ${currentPage + 1}`;
-
-    pageData[currentPage].text =
-      sanitizeText(slideTextInput.value) || "No notes on this page yet.";
+    pageData[currentPage].title = sanitizeText(slideTitleInput.value);
+    pageData[currentPage].text = sanitizeText(slideTextInput.value);
 
     updateScreen();
   }
@@ -93,14 +158,12 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   slideTitleInput.addEventListener("input", () => {
-    const draftTitle =
-      sanitizeText(slideTitleInput.value) || `Page ${currentPage + 1}`;
+    const draftTitle = clampTitle(slideTitleInput.value) || `Page ${currentPage + 1}`;
     screenTitle.setAttribute("value", draftTitle);
   });
 
   slideTextInput.addEventListener("input", () => {
-    const draftText =
-      sanitizeText(slideTextInput.value) || "No notes on this page yet.";
+    const draftText = fitBodyText(slideTextInput.value) || "No notes on this page yet.";
     screenText.setAttribute("value", draftText);
   });
 
