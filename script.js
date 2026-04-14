@@ -30,6 +30,11 @@ window.addEventListener("DOMContentLoaded", () => {
   const prevEditorBtn = document.querySelector("#prevEditorBtn");
   const pageStatus = document.querySelector("#pageStatus");
 
+  const toggleBtn = document.querySelector("#toggleUI");
+  const editorPanel = document.querySelector("#editorPanel");
+
+  let isVisible = true;
+
   function sanitizeText(value) {
     return value.replace(/\r/g, "").trim();
   }
@@ -41,7 +46,7 @@ window.addEventListener("DOMContentLoaded", () => {
     screenPage.setAttribute("value", `${currentPage + 1} / ${pageData.length}`);
 
     slideTitleInput.value = page.title;
-    slideTextInput.value = page.text.replace(/\n/g, "\n");
+    slideTextInput.value = page.text;
     pageStatus.textContent = `Page ${currentPage + 1} / ${pageData.length}`;
   }
 
@@ -67,6 +72,11 @@ window.addEventListener("DOMContentLoaded", () => {
     updateScreen();
   }
 
+  function toggleEditor() {
+    isVisible = !isVisible;
+    editorPanel.style.display = isVisible ? "block" : "none";
+  }
+
   saveBtn.addEventListener("click", saveCurrentPage);
   nextEditorBtn.addEventListener("click", goNextPage);
   prevEditorBtn.addEventListener("click", goPrevPage);
@@ -74,13 +84,23 @@ window.addEventListener("DOMContentLoaded", () => {
   nextBtn.addEventListener("click", goNextPage);
   prevBtn.addEventListener("click", goPrevPage);
 
+  toggleBtn.addEventListener("click", toggleEditor);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() === "n") {
+      toggleEditor();
+    }
+  });
+
   slideTitleInput.addEventListener("input", () => {
-    const draftTitle = sanitizeText(slideTitleInput.value) || `Page ${currentPage + 1}`;
+    const draftTitle =
+      sanitizeText(slideTitleInput.value) || `Page ${currentPage + 1}`;
     screenTitle.setAttribute("value", draftTitle);
   });
 
   slideTextInput.addEventListener("input", () => {
-    const draftText = sanitizeText(slideTextInput.value) || "No notes on this page yet.";
+    const draftText =
+      sanitizeText(slideTextInput.value) || "No notes on this page yet.";
     screenText.setAttribute("value", draftText);
   });
 
