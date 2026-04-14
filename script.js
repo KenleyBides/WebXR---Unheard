@@ -1,36 +1,88 @@
-const slides = ["#slide1", "#slide2", "#slide3"];
-let currentSlide = 0;
-let toughMode = false;
+const pageData = [
+  {
+    title: "Page 1",
+    text: "Welcome to Unheard.\nUse the editor panel\nto write your speaking notes."
+  },
+  {
+    title: "Page 2",
+    text: "Main point:\nExplain your idea clearly\nand keep steady pacing."
+  },
+  {
+    title: "Page 3",
+    text: "Conclusion:\nSummarize the takeaway\nand end confidently."
+  }
+];
+
+let currentPage = 0;
 
 window.addEventListener("DOMContentLoaded", () => {
-  const screen = document.querySelector("#screen");
+  const screenTitle = document.querySelector("#screenTitle");
+  const screenText = document.querySelector("#screenText");
+  const screenPage = document.querySelector("#screenPage");
+
   const nextBtn = document.querySelector("#nextBtn");
-  const moodBtn = document.querySelector("#moodBtn");
-  const audience = document.querySelectorAll(".person");
+  const prevBtn = document.querySelector("#prevBtn");
 
-  nextBtn.addEventListener("click", () => {
-    currentSlide = (currentSlide + 1) % slides.length;
-    screen.setAttribute("material", "src", slides[currentSlide]);
+  const slideTitleInput = document.querySelector("#slideTitle");
+  const slideTextInput = document.querySelector("#slideText");
+  const saveBtn = document.querySelector("#saveBtn");
+  const nextEditorBtn = document.querySelector("#nextEditorBtn");
+  const prevEditorBtn = document.querySelector("#prevEditorBtn");
+  const pageStatus = document.querySelector("#pageStatus");
+
+  function sanitizeText(value) {
+    return value.replace(/\r/g, "").trim();
+  }
+
+  function updateScreen() {
+    const page = pageData[currentPage];
+    screenTitle.setAttribute("value", page.title || `Page ${currentPage + 1}`);
+    screenText.setAttribute("value", page.text || "No notes on this page yet.");
+    screenPage.setAttribute("value", `${currentPage + 1} / ${pageData.length}`);
+
+    slideTitleInput.value = page.title;
+    slideTextInput.value = page.text.replace(/\n/g, "\n");
+    pageStatus.textContent = `Page ${currentPage + 1} / ${pageData.length}`;
+  }
+
+  function saveCurrentPage() {
+    pageData[currentPage].title =
+      sanitizeText(slideTitleInput.value) || `Page ${currentPage + 1}`;
+
+    pageData[currentPage].text =
+      sanitizeText(slideTextInput.value) || "No notes on this page yet.";
+
+    updateScreen();
+  }
+
+  function goNextPage() {
+    saveCurrentPage();
+    currentPage = (currentPage + 1) % pageData.length;
+    updateScreen();
+  }
+
+  function goPrevPage() {
+    saveCurrentPage();
+    currentPage = (currentPage - 1 + pageData.length) % pageData.length;
+    updateScreen();
+  }
+
+  saveBtn.addEventListener("click", saveCurrentPage);
+  nextEditorBtn.addEventListener("click", goNextPage);
+  prevEditorBtn.addEventListener("click", goPrevPage);
+
+  nextBtn.addEventListener("click", goNextPage);
+  prevBtn.addEventListener("click", goPrevPage);
+
+  slideTitleInput.addEventListener("input", () => {
+    const draftTitle = sanitizeText(slideTitleInput.value) || `Page ${currentPage + 1}`;
+    screenTitle.setAttribute("value", draftTitle);
   });
 
-  moodBtn.addEventListener("click", () => {
-    toughMode = !toughMode;
-
-    audience.forEach((person, index) => {
-      if (toughMode) {
-        const rotations = ["0 12 0", "0 -12 0", "0 18 0"];
-        const colors = ["#777777", "#888888", "#999999"];
-
-        person.setAttribute("color", colors[index % colors.length]);
-        person.setAttribute(
-          "animation",
-          `property: rotation; to: ${rotations[index % rotations.length]}; dir: alternate; loop: true; dur: 900`
-        );
-      } else {
-        person.setAttribute("color", "#3366cc");
-        person.removeAttribute("animation");
-        person.setAttribute("rotation", "0 0 0");
-      }
-    });
+  slideTextInput.addEventListener("input", () => {
+    const draftText = sanitizeText(slideTextInput.value) || "No notes on this page yet.";
+    screenText.setAttribute("value", draftText);
   });
+
+  updateScreen();
 });

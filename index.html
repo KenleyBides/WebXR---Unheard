@@ -2,71 +2,232 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unheard - WebXR Prototype</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title>Unheard - Classroom Prototype</title>
   <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
   <link rel="stylesheet" href="style.css" />
   <script defer src="script.js"></script>
 </head>
 <body>
-  <a-scene>
-    <a-assets>
-      <img id="slide1" src="https://via.placeholder.com/1024x576/1e3a5f/ffffff?text=Welcome+to+Unheard">
-      <img id="slide2" src="https://via.placeholder.com/1024x576/355c7d/ffffff?text=Public+Speaking+Practice">
-      <img id="slide3" src="https://via.placeholder.com/1024x576/6c5b7b/ffffff?text=Stay+Calm+and+Present">
-    </a-assets>
+  <div id="editorPanel">
+    <h2>Presentation Notes</h2>
+    <p class="hint">
+      Type notes for the current page, then press Update Screen.
+    </p>
 
-    <!-- User spawn: front of classroom -->
-    <a-entity position="0 1.6 7">
+    <label for="slideTitle">Page Title</label>
+    <input id="slideTitle" type="text" maxlength="40" placeholder="Intro" />
+
+    <label for="slideText">Page Text</label>
+    <textarea
+      id="slideText"
+      rows="10"
+      placeholder="Type presentation notes here..."
+    ></textarea>
+
+    <div class="editorButtons">
+      <button id="saveBtn" type="button">Update Screen</button>
+      <button id="prevEditorBtn" type="button">Previous Page</button>
+      <button id="nextEditorBtn" type="button">Next Page</button>
+    </div>
+
+    <p id="pageStatus">Page 1 / 3</p>
+  </div>
+
+  <a-scene>
+    <a-assets></a-assets>
+
+    <!-- Camera / spawn -->
+    <a-entity id="rig" position="0 1.6 8.2">
       <a-camera>
-        <a-cursor color="#000000"></a-cursor>
+        <a-cursor
+          fuse="false"
+          raycaster="objects: .clickable"
+          color="#111"
+        ></a-cursor>
       </a-camera>
     </a-entity>
 
     <!-- Lighting -->
-    <a-entity light="type: ambient; intensity: 0.9"></a-entity>
-    <a-entity light="type: directional; intensity: 0.8" position="2 4 2"></a-entity>
+    <a-entity light="type: ambient; intensity: 0.85"></a-entity>
+    <a-entity light="type: directional; intensity: 0.85" position="3 6 4"></a-entity>
+    <a-entity light="type: point; intensity: 0.35; distance: 18" position="0 3.6 0"></a-entity>
 
     <!-- Room -->
-    <a-plane rotation="-90 0 0" width="20" height="20" color="#bdbdbd"></a-plane>
-    <a-box position="0 2 -8" width="20" height="4" depth="0.2" color="#efefef"></a-box>
-    <a-box position="-10 2 0" width="0.2" height="4" depth="20" color="#dddddd"></a-box>
-    <a-box position="10 2 0" width="0.2" height="4" depth="20" color="#dddddd"></a-box>
-    <a-box position="0 4 0" width="20" height="0.2" depth="20" color="#f5f5f5"></a-box>
+    <a-plane position="0 0 0" rotation="-90 0 0" width="22" height="24" color="#cbbda7"></a-plane>
 
-    <!-- Presentation screen above audience on front wall -->
-    <a-plane id="screen" position="0 3.1 -7.7" width="5.5" height="3" src="#slide1"></a-plane>
+    <a-box position="0 2 -10" width="22" height="4" depth="0.2" color="#efe8dd"></a-box>
+    <a-box position="0 2 10" width="22" height="4" depth="0.2" color="#efe8dd"></a-box>
+    <a-box position="-11 2 0" width="0.2" height="4" depth="20" color="#e4ddd3"></a-box>
+    <a-box position="11 2 0" width="0.2" height="4" depth="20" color="#e4ddd3"></a-box>
+    <a-box position="0 4.05 0" width="22" height="0.2" depth="20" color="#faf7f1"></a-box>
 
-    <!-- Buttons under the screen, still in front -->
-    <a-box id="nextBtn" class="clickable" position="1.8 1.9 -7.3" width="1.2" height="0.5" depth="0.3" color="#4CAF50"></a-box>
-    <a-text value="Next" position="1.45 1.85 -7.05" scale="1.5 1.5 1.5" color="#ffffff"></a-text>
+    <!-- Front board -->
+    <a-plane position="0 2.4 -9.86" width="9" height="2.8" color="#f8f8f5"></a-plane>
+    <a-text
+      value="UNHEARD CLASSROOM"
+      position="-2.8 3.55 -9.75"
+      color="#1d2b36"
+      width="8"
+    ></a-text>
 
-    <a-box id="moodBtn" class="clickable" position="-1.8 1.9 -7.3" width="1.5" height="0.5" depth="0.3" color="#FF9800"></a-box>
-    <a-text value="Mood" position="-2.2 1.85 -7.05" scale="1.5 1.5 1.5" color="#ffffff"></a-text>
+    <!-- Windows -->
+    <a-plane position="-10.88 2.4 -4" rotation="0 90 0" width="3" height="1.8" color="#bfe4ff"></a-plane>
+    <a-plane position="-10.88 2.4 0" rotation="0 90 0" width="3" height="1.8" color="#bfe4ff"></a-plane>
+    <a-plane position="-10.88 2.4 4" rotation="0 90 0" width="3" height="1.8" color="#bfe4ff"></a-plane>
 
-    <!-- Audience facing the front wall -->
+    <!-- Teacher desk -->
+    <a-box position="0 0.65 5.3" width="4.8" height="0.18" depth="1.9" color="#795548"></a-box>
+    <a-box position="-2.1 0.3 4.6" width="0.16" height="0.7" depth="0.16" color="#5d4037"></a-box>
+    <a-box position="2.1 0.3 4.6" width="0.16" height="0.7" depth="0.16" color="#5d4037"></a-box>
+    <a-box position="-2.1 0.3 6" width="0.16" height="0.7" depth="0.16" color="#5d4037"></a-box>
+    <a-box position="2.1 0.3 6" width="0.16" height="0.7" depth="0.16" color="#5d4037"></a-box>
+
+    <!-- Laptop / presentation screen -->
+    <a-box position="0 0.83 4.95" width="1.8" height="0.06" depth="1.05" color="#2a2a2a"></a-box>
+    <a-plane id="screenBg" position="0 1.48 4.53" rotation="-48 0 0" width="2.25" height="1.35" color="#16212b"></a-plane>
+
+    <a-text
+      id="screenTitle"
+      value="Page 1"
+      position="-0.87 1.92 4.28"
+      rotation="-48 0 0"
+      color="#ffffff"
+      width="3"
+      wrap-count="20"
+    ></a-text>
+
+    <a-text
+      id="screenText"
+      value="Welcome to Unheard.\nUse the editor panel\nto write your speaking notes."
+      position="-0.88 1.68 4.3"
+      rotation="-48 0 0"
+      color="#dfeaff"
+      width="2.9"
+      wrap-count="28"
+      baseline="top"
+    ></a-text>
+
+    <a-text
+      id="screenPage"
+      value="1 / 3"
+      position="0.58 0.99 4.86"
+      rotation="-48 0 0"
+      color="#9ec5ff"
+      width="2"
+      align="right"
+    ></a-text>
+
+    <!-- Desk buttons -->
+    <a-box
+      id="prevBtn"
+      class="clickable"
+      position="-0.72 0.93 5.76"
+      width="0.8"
+      height="0.22"
+      depth="0.32"
+      color="#ff9800"
+    ></a-box>
+    <a-text
+      value="Prev"
+      position="-0.98 0.97 5.94"
+      color="#ffffff"
+      width="2.2"
+    ></a-text>
+
+    <a-box
+      id="nextBtn"
+      class="clickable"
+      position="0.72 0.93 5.76"
+      width="0.8"
+      height="0.22"
+      depth="0.32"
+      color="#4caf50"
+    ></a-box>
+    <a-text
+      value="Next"
+      position="0.46 0.97 5.94"
+      color="#ffffff"
+      width="2.2"
+    ></a-text>
+
+    <!-- Audience desks + audience -->
     <a-entity id="audience">
-      <!-- Row 1 -->
-      <a-cylinder class="person" position="-3 0.75 -2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="-1 0.75 -2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="1 0.75 -2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="3 0.75 -2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <!-- Row 1 desks -->
+      <a-box position="-4 0.62 1.8" width="2" height="0.12" depth="0.9" color="#8d6e63"></a-box>
+      <a-box position="0 0.62 1.8" width="2" height="0.12" depth="0.9" color="#8d6e63"></a-box>
+      <a-box position="4 0.62 1.8" width="2" height="0.12" depth="0.9" color="#8d6e63"></a-box>
 
-      <!-- Row 2 -->
-      <a-cylinder class="person" position="-4 0.75 0" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="-2 0.75 0" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="0 0.75 0" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="2 0.75 0" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="4 0.75 0" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <!-- Row 2 desks -->
+      <a-box position="-4 0.62 -1.2" width="2" height="0.12" depth="0.9" color="#8d6e63"></a-box>
+      <a-box position="0 0.62 -1.2" width="2" height="0.12" depth="0.9" color="#8d6e63"></a-box>
+      <a-box position="4 0.62 -1.2" width="2" height="0.12" depth="0.9" color="#8d6e63"></a-box>
 
-      <!-- Row 3 -->
-      <a-cylinder class="person" position="-3 0.75 2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="-1 0.75 2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="1 0.75 2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
-      <a-cylinder class="person" position="3 0.75 2.5" radius="0.3" height="1.5" color="#3366cc"></a-cylinder>
+      <!-- Row 3 desks -->
+      <a-box position="-4 0.62 -4.2" width="2" height="0.12" depth="0.9" color="#8d6e63"></a-box>
+      <a-box position="0 0.62 -4.2" width="2" height="0.12" depth="0.9" color="#8d6e63"></a-box>
+      <a-box position="4 0.62 -4.2" width="2" height="0.12" depth="0.9" color="#8d6e63"></a-box>
+
+      <!-- Audience figures -->
+      <a-cylinder position="-4.45 0.95 2.35" radius="0.22" height="0.95" color="#4f6fad"></a-cylinder>
+      <a-sphere position="-4.45 1.58 2.35" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="-3.55 0.95 2.1" radius="0.22" height="0.95" color="#7a5fa8"></a-cylinder>
+      <a-sphere position="-3.55 1.58 2.1" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="-0.45 0.95 2.35" radius="0.22" height="0.95" color="#488a6c"></a-cylinder>
+      <a-sphere position="-0.45 1.58 2.35" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="0.45 0.95 2.1" radius="0.22" height="0.95" color="#a85f5f"></a-cylinder>
+      <a-sphere position="0.45 1.58 2.1" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="3.55 0.95 2.35" radius="0.22" height="0.95" color="#4f6fad"></a-cylinder>
+      <a-sphere position="3.55 1.58 2.35" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="4.45 0.95 2.1" radius="0.22" height="0.95" color="#c5793e"></a-cylinder>
+      <a-sphere position="4.45 1.58 2.1" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="-4.45 0.95 -0.65" radius="0.22" height="0.95" color="#7a5fa8"></a-cylinder>
+      <a-sphere position="-4.45 1.58 -0.65" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="-3.55 0.95 -0.9" radius="0.22" height="0.95" color="#488a6c"></a-cylinder>
+      <a-sphere position="-3.55 1.58 -0.9" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="-0.45 0.95 -0.65" radius="0.22" height="0.95" color="#c5793e"></a-cylinder>
+      <a-sphere position="-0.45 1.58 -0.65" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="0.45 0.95 -0.9" radius="0.22" height="0.95" color="#4f6fad"></a-cylinder>
+      <a-sphere position="0.45 1.58 -0.9" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="3.55 0.95 -0.65" radius="0.22" height="0.95" color="#a85f5f"></a-cylinder>
+      <a-sphere position="3.55 1.58 -0.65" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="4.45 0.95 -0.9" radius="0.22" height="0.95" color="#488a6c"></a-cylinder>
+      <a-sphere position="4.45 1.58 -0.9" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="-4.45 0.95 -3.65" radius="0.22" height="0.95" color="#4f6fad"></a-cylinder>
+      <a-sphere position="-4.45 1.58 -3.65" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="-3.55 0.95 -3.9" radius="0.22" height="0.95" color="#c5793e"></a-cylinder>
+      <a-sphere position="-3.55 1.58 -3.9" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="-0.45 0.95 -3.65" radius="0.22" height="0.95" color="#7a5fa8"></a-cylinder>
+      <a-sphere position="-0.45 1.58 -3.65" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="0.45 0.95 -3.9" radius="0.22" height="0.95" color="#488a6c"></a-cylinder>
+      <a-sphere position="0.45 1.58 -3.9" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="3.55 0.95 -3.65" radius="0.22" height="0.95" color="#a85f5f"></a-cylinder>
+      <a-sphere position="3.55 1.58 -3.65" radius="0.22" color="#f0c9a4"></a-sphere>
+
+      <a-cylinder position="4.45 0.95 -3.9" radius="0.22" height="0.95" color="#4f6fad"></a-cylinder>
+      <a-sphere position="4.45 1.58 -3.9" radius="0.22" color="#f0c9a4"></a-sphere>
     </a-entity>
 
-    <a-sky color="#ececec"></a-sky>
+    <a-sky color="#dcefff"></a-sky>
   </a-scene>
 </body>
 </html>
